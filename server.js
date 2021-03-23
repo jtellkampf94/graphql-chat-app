@@ -13,7 +13,8 @@ server.listen().then(({ url }) => {
   mongoose
     .connect(process.env.MONGODBURI, {
       useNewUrlParser: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
+      useCreateIndex: true
     })
     .then(() => console.log("Connected to MongoDB Database"))
     .catch(err => console.log(err));
