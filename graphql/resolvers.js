@@ -1,5 +1,6 @@
 const User = require("../models/user");
-const { UserInputError } = require("apollo-server");
+const { UserInputError, AuthenticationError } = require("apollo-server");
+const jwt = require("jsonwebtoken");
 
 const resolvers = {
   Query: {
@@ -9,6 +10,52 @@ const resolvers = {
         return users;
       } catch (error) {
         console.log(error);
+      }
+    },
+    login: async (parent, args, ctx, info) => {
+      const { username, password } = args;
+      let errors = {};
+      try {
+        // Validate input
+        if (username.trim() === "")
+          errors.username = "Username must not be empty";
+        if (password === "") errors.password = "Password must not be empty";
+
+        if (Object.keys(errors).length > 0)
+          throw new UserInputError("Bad input", { errors });
+        // Find user
+        const user = await User.findOne({
+          username
+        });
+
+        if (!user) {
+          errors.username = "User not found";
+          throw new UserInputError("user not found", { errors });
+        }
+
+        // Check if password is correct
+        if (!user.authenticate(password)) {
+          errors.password = "Password incorrect";
+          throw new AuthenticationError("password incorrect", { errors });
+        }
+
+        const token = jwt.sign(
+          {
+            username
+          },
+          process.env.JWT_SECRET,
+          { expiresIn: 6 * 60 * 60 }
+        );
+
+        return {
+          ...user.toJSON(),
+          createdAt: user.createdAt.toISOString(),
+          token
+        };
+      } catch (error) {
+        console.log(error);
+        throw error;
+        // throw new UserInputError("Bad input", { errors: error });
       }
     }
   },
@@ -22,9 +69,8 @@ const resolvers = {
         if (email.trim() === "") errors.email = "Email must not be empty";
         if (username.trim() === "")
           errors.username = "Username must not be empty";
-        if (password.trim() === "")
-          errors.password = "Password must not be empty";
-        if (confirmPassword.trim() === "")
+        if (password === "") errors.password = "Password must not be empty";
+        if (confirmPassword === "")
           errors.confirmPassword = "Confirm password must not be empty";
 
         if (password !== confirmPassword)
