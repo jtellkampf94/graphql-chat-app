@@ -1,17 +1,15 @@
-const books = [
-  {
-    title: "The Awakening",
-    author: "Kate Chopin"
-  },
-  {
-    title: "City of Glass",
-    author: "Paul Auster"
-  }
-];
+const User = require("../models/user");
 
 const resolvers = {
   Query: {
-    books: () => books
+    getUsers: async () => {
+      try {
+        const users = await User.find();
+        return users;
+      } catch (error) {
+        console.log(error);
+      }
+    }
   }
 };
 
