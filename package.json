@@ -1,0 +1,28 @@
+{
+  "name": "graphql-chat-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server.js --ext js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jtellkampf94/graphql-chat-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jtellkampf94/graphql-chat-app/issues"
+  },
+  "homepage": "https://github.com/jtellkampf94/graphql-chat-app#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  },
+  "dependencies": {
+    "apollo-server": "^2.21.2",
+    "graphql": "^15.5.0"
+  }
+}
