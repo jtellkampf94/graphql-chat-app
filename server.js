@@ -1,4 +1,7 @@
 const { ApolloServer, gql } = require("apollo-server");
+const mongoose = require("mongoose");
+
+require("dotenv").config();
 
 const books = [
   {
@@ -31,4 +34,11 @@ const server = new ApolloServer({ typeDefs, resolvers });
 
 server.listen().then(({ url }) => {
   console.log(`🚀  Server ready at ${url}`);
+  mongoose
+    .connect(process.env.MONGODBURI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    })
+    .then(() => console.log("Connected to MongoDB Database"))
+    .catch(err => console.log(err));
 });
