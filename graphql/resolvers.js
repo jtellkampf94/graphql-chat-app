@@ -4,12 +4,25 @@ const jwt = require("jsonwebtoken");
 
 const resolvers = {
   Query: {
-    getUsers: async () => {
+    getUsers: async (parent, args, ctx, info) => {
       try {
-        const users = await User.find();
-        return users;
+        let user;
+        if (ctx.req && ctx.req.headers.authorization) {
+          const token = ctx.req.headers.authorization.split("Bearer ")[1];
+          jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+            if (err) {
+              throw new AuthenticationError("Unauthenticated");
+            }
+            user = decodedToken;
+          });
+          const users = await User.find({ username: { $ne: user.username } });
+          return users;
+        } else {
+          throw new AuthenticationError("Unauthenticated");
+        }
       } catch (error) {
         console.log(error);
+        throw error;
       }
     },
     login: async (parent, args, ctx, info) => {
