@@ -1,5 +1,26 @@
 import React, { useState } from "react";
 import { Row, Col, Form, Button } from "react-bootstrap";
+import { gql, useMutation } from "@apollo/client";
+
+const REGISTER_USER = gql`
+  mutation register(
+    $username: String!
+    $email: String!
+    $password: String!
+    $confirmPassword: String!
+  ) {
+    register(
+      username: $username
+      email: $email
+      password: $password
+      confirmPassword: $confirmPassword
+    ) {
+      username
+      email
+      createdAt
+    }
+  }
+`;
 
 const Register = () => {
   const [variables, setVariables] = useState({
@@ -9,6 +30,13 @@ const Register = () => {
     confirmPassword: ""
   });
 
+  const [errors, setErrors] = useState({});
+
+  const [registerUser, { loading }] = useMutation(REGISTER_USER, {
+    update: (cache, res) => console.log(res),
+    onError: err => setErrors(err.graphQLErrors[0].extensions.errors)
+  });
+
   const handleChange = e => {
     const { name, value } = e.target;
     setVariables({ ...variables, [name]: value });
@@ -16,7 +44,7 @@ const Register = () => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    console.log(variables);
+    registerUser({ variables });
   };
 
   return (
@@ -61,8 +89,8 @@ const Register = () => {
             />
           </Form.Group>
           <div className="text-center">
-            <Button variant="success" type="submit">
-              Register
+            <Button variant="success" type="submit" disabled={loading}>
+              {loading ? "loading..." : "Register"}
             </Button>
           </div>
         </Form>
