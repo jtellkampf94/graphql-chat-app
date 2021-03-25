@@ -53,40 +53,64 @@ const Register = () => {
         <h1 className="text-center">Register</h1>
         <Form onSubmit={handleSubmit}>
           <Form.Group>
-            <Form.Label>Email address</Form.Label>
+            <Form.Label className={errors.email && "text-danger"}>
+              Email address
+            </Form.Label>
             <Form.Control
+              isInvalid={errors.email}
               type="email"
               name="email"
               value={variables.email}
               onChange={handleChange}
             />
+            <Form.Control.Feedback type="invalid">
+              {errors.email}
+            </Form.Control.Feedback>
           </Form.Group>
           <Form.Group>
-            <Form.Label>Username</Form.Label>
+            <Form.Label className={errors.username && "text-danger"}>
+              Username
+            </Form.Label>
             <Form.Control
+              isInvalid={errors.username}
               type="text"
               name="username"
               value={variables.username}
               onChange={handleChange}
             />
+            <Form.Control.Feedback type="invalid">
+              {errors.username}
+            </Form.Control.Feedback>
           </Form.Group>
           <Form.Group>
-            <Form.Label>Password</Form.Label>
+            <Form.Label className={errors.password && "text-danger"}>
+              Password
+            </Form.Label>
             <Form.Control
+              isInvalid={errors.password}
               type="password"
               name="password"
               value={variables.password}
               onChange={handleChange}
             />
+            <Form.Control.Feedback type="invalid">
+              {errors.password}
+            </Form.Control.Feedback>
           </Form.Group>
           <Form.Group>
-            <Form.Label>Confirm password</Form.Label>
+            <Form.Label className={errors.confirmPassword && "text-danger"}>
+              Confirm password
+            </Form.Label>
             <Form.Control
+              isInvalid={errors.confirmPassword}
               type="password"
               name="confirmPassword"
               value={variables.confirmPassword}
               onChange={handleChange}
             />
+            <Form.Control.Feedback type="invalid">
+              {errors.confirmPassword}
+            </Form.Control.Feedback>
           </Form.Group>
           <div className="text-center">
             <Button variant="success" type="submit" disabled={loading}>
