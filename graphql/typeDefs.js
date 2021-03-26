@@ -2,10 +2,16 @@ const { gql } = require("apollo-server");
 
 const typeDefs = gql`
   type User {
+    id: ID!
     username: String!
     email: String!
     createdAt: String!
     token: String
+  }
+  type Message {
+    content: String!
+    from: ID!
+    to: ID!
   }
   type Query {
     getUsers: [User]!
@@ -18,6 +24,7 @@ const typeDefs = gql`
       password: String!
       confirmPassword: String!
     ): User!
+    sendMessage(to: String!, content: String!): Message!
   }
 `;
 

@@ -62,6 +62,7 @@ const resolvers = {
 
         return {
           ...user.toJSON(),
+          id: user._id,
           createdAt: user.createdAt.toISOString(),
           token
         };
