@@ -3,6 +3,31 @@ const Message = require("../../models/message");
 const { UserInputError, AuthenticationError } = require("apollo-server");
 
 const resolvers = {
+  Query: {
+    getMessages: async (parent, args, ctx, info) => {
+      try {
+        const { user } = ctx;
+        if (!user) throw new AuthenticationError("Unauthenticated");
+
+        const { from } = args;
+        const otherUser = await User.findById(from);
+        if (!otherUser) throw new UserInputError("User not found");
+
+        const userIds = [otherUser._id, user.id];
+        const messages = await Message.find({
+          from: { $in: userIds },
+          to: { $in: userIds }
+        })
+          .sort({ createdAt: -1 })
+          .exec();
+
+        return messages;
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    }
+  },
   Mutation: {
     sendMessage: async (parent, args, ctx, info) => {
       try {
@@ -24,8 +49,7 @@ const resolvers = {
         await message.save();
         return {
           ...message.toJSON(),
-          id: message._id,
-          createdAt: message.createdAt.toISOString()
+          id: message._id
         };
       } catch (error) {
         console.log(error);
