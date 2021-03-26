@@ -9,9 +9,11 @@ const typeDefs = gql`
     token: String
   }
   type Message {
+    id: ID!
     content: String!
     from: ID!
     to: ID!
+    createdAt: String!
   }
   type Query {
     getUsers: [User]!
