@@ -49,7 +49,7 @@ const resolvers = {
         // Check if password is correct
         if (!user.authenticate(password)) {
           errors.password = "Password incorrect";
-          throw new AuthenticationError("password incorrect", { errors });
+          throw new UserInputError("password incorrect", { errors });
         }
 
         const token = jwt.sign(
