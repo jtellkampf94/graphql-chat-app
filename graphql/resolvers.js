@@ -6,20 +6,11 @@ const resolvers = {
   Query: {
     getUsers: async (parent, args, ctx, info) => {
       try {
-        let user;
-        if (ctx.req && ctx.req.headers.authorization) {
-          const token = ctx.req.headers.authorization.split("Bearer ")[1];
-          jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
-            if (err) {
-              throw new AuthenticationError("Unauthenticated");
-            }
-            user = decodedToken;
-          });
-          const users = await User.find({ username: { $ne: user.username } });
-          return users;
-        } else {
-          throw new AuthenticationError("Unauthenticated");
-        }
+        const { user } = ctx;
+        if (!user) throw new AuthenticationError("Unauthenticated");
+
+        const users = await User.find({ _id: { $ne: user.id } });
+        return users;
       } catch (error) {
         console.log(error);
         throw error;
@@ -54,7 +45,7 @@ const resolvers = {
 
         const token = jwt.sign(
           {
-            username
+            id: user._id
           },
           process.env.JWT_SECRET,
           { expiresIn: 6 * 60 * 60 }
