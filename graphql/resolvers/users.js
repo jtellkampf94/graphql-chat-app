@@ -1,4 +1,5 @@
 const User = require("../../models/user");
+const Message = require("../../models/message");
 const { UserInputError, AuthenticationError } = require("apollo-server");
 const jwt = require("jsonwebtoken");
 
@@ -9,7 +10,23 @@ const resolvers = {
         const { user } = ctx;
         if (!user) throw new AuthenticationError("Unauthenticated");
 
-        const users = await User.find({ _id: { $ne: user.id } });
+        let users = await User.find({ _id: { $ne: user.id } }).select(
+          "-email"
+        );
+
+        const allUserMessages = await Message.find({
+          $or: [{ from: user.id }, { to: user.id }]
+        })
+          .sort({ createdAt: -1 })
+          .exec();
+        
+        users = users.map((otherUser) => {
+          const latestMessage = allUserMessages.find(m => m.from.toString() === otherUser._id.toString() || m.to.toString() === otherUser._id.toString())
+        
+          otherUser.latestMessage = latestMessage
+          return otherUser
+        })
+        
         return users;
       } catch (error) {
         console.log(error);
