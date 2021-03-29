@@ -9,8 +9,8 @@ const resolvers = {
         const { user } = ctx;
         if (!user) throw new AuthenticationError("Unauthenticated");
 
-        const { from } = args;
-        const otherUser = await User.findById(from);
+        const { id } = args;
+        const otherUser = await User.findById(id);
         if (!otherUser) throw new UserInputError("User not found");
 
         const userIds = [otherUser._id, user.id];
@@ -18,6 +18,8 @@ const resolvers = {
           from: { $in: userIds },
           to: { $in: userIds }
         })
+          .populate("from", "_id username")
+          .populate("to", "_id username")
           .sort({ createdAt: -1 })
           .exec();
 

@@ -10,23 +10,27 @@ const resolvers = {
         const { user } = ctx;
         if (!user) throw new AuthenticationError("Unauthenticated");
 
-        let users = await User.find({ _id: { $ne: user.id } }).select(
-          "-email"
-        );
+        let users = await User.find({ _id: { $ne: user.id } }).select("-email");
 
         const allUserMessages = await Message.find({
           $or: [{ from: user.id }, { to: user.id }]
         })
+          .populate("from", "_id username")
+          .populate("to", "_id username")
           .sort({ createdAt: -1 })
           .exec();
-        
-        users = users.map((otherUser) => {
-          const latestMessage = allUserMessages.find(m => m.from.toString() === otherUser._id.toString() || m.to.toString() === otherUser._id.toString())
-        
-          otherUser.latestMessage = latestMessage
-          return otherUser
-        })
-        
+
+        users = users.map(otherUser => {
+          const latestMessage = allUserMessages.find(
+            m =>
+              m.from._id.toString() === otherUser._id.toString() ||
+              m.to._id.toString() === otherUser._id.toString()
+          );
+
+          otherUser.latestMessage = latestMessage;
+          return otherUser;
+        });
+
         return users;
       } catch (error) {
         console.log(error);
@@ -71,7 +75,7 @@ const resolvers = {
         return {
           ...user.toJSON(),
           id: user._id,
-          createdAt: user.createdAt.toISOString(),
+          // createdAt: user.createdAt.toISOString(),
           token
         };
       } catch (error) {

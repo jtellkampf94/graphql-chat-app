@@ -13,14 +13,18 @@ const typeDefs = gql`
   type Message {
     id: ID!
     content: String!
-    from: ID!
-    to: ID!
+    from: Username!
+    to: Username!
     createdAt: String!
+  }
+  type Username {
+    id: ID!
+    username: String!
   }
   type Query {
     getUsers: [User]!
     login(username: String!, password: String!): User!
-    getMessages(from: ID!): [Message]!
+    getMessages(id: ID!): [Message]!
   }
   type Mutation {
     register(
