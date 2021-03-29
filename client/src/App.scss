@@ -2,3 +2,7 @@ $paragraph-margin-bottom: 0;
 $gray-600: rgb(245, 245, 245);
 
 @import "~bootstrap/scss/bootstrap";
+
+.user-div:hover {
+  background-color: rgb(250, 250, 250);
+}
