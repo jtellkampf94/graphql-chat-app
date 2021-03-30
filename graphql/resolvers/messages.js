@@ -36,8 +36,8 @@ const resolvers = {
         const { user } = ctx;
         if (!user) throw new AuthenticationError("Unauthenticated");
 
-        const { to, content } = args;
-        const recipient = await User.findById(to);
+        const { id, content } = args;
+        const recipient = await User.findById(id);
 
         if (!recipient) {
           throw new UserInputError("User not found");
@@ -47,12 +47,13 @@ const resolvers = {
 
         if (content.trim() === "") throw new UserInputError("Message is Empty");
 
-        const message = new Message({ content, from: user.id, to });
+        const message = new Message({ content, from: user.id, to: id });
         await message.save();
-        return {
-          ...message.toJSON(),
-          id: message._id
-        };
+        const fullMessage = await Message.findById(message._id)
+          .populate("from", "_id username")
+          .populate("to", "_id username")
+          .exec();
+        return fullMessage;
       } catch (error) {
         console.log(error);
         throw error;

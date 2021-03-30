@@ -33,7 +33,7 @@ const typeDefs = gql`
       password: String!
       confirmPassword: String!
     ): User!
-    sendMessage(to: String!, content: String!): Message!
+    sendMessage(id: ID!, content: String!): Message!
   }
 `;
 

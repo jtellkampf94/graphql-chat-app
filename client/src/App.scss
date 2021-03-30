@@ -24,3 +24,13 @@ $gray-600: rgb(245, 245, 245);
   object-fit: cover;
   border-radius: 50%;
 }
+
+.message-input::placeholder {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.info-text {
+  color: rgba(0, 0, 0, 0.5);
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
