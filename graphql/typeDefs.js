@@ -17,6 +17,13 @@ const typeDefs = gql`
     to: Username!
     createdAt: String!
   }
+  type Reaction {
+    id: ID!
+    content: String!
+    Message: Message!
+    User: User!
+    createdAt: String!
+  }
   type Username {
     id: ID!
     username: String!
@@ -34,9 +41,11 @@ const typeDefs = gql`
       confirmPassword: String!
     ): User!
     sendMessage(id: ID!, content: String!): Message!
+    reactToMessage(id: ID!, content: String!): Reaction!
   }
   type Subscription {
     newMessage: Message!
+    newReaction: Reaction!
   }
 `;
 
