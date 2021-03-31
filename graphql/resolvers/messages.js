@@ -1,6 +1,11 @@
+const {
+  UserInputError,
+  AuthenticationError,
+  withFilter
+} = require("apollo-server");
+
 const User = require("../../models/user");
 const Message = require("../../models/message");
-const { UserInputError, AuthenticationError } = require("apollo-server");
 
 const resolvers = {
   Query: {
@@ -33,7 +38,7 @@ const resolvers = {
   Mutation: {
     sendMessage: async (parent, args, ctx, info) => {
       try {
-        const { user } = ctx;
+        const { user, pubsub } = ctx;
         if (!user) throw new AuthenticationError("Unauthenticated");
 
         const { id, content } = args;
@@ -53,11 +58,39 @@ const resolvers = {
           .populate("from", "_id username")
           .populate("to", "_id username")
           .exec();
+
+        pubsub.publish("NEW_MESSAGE", { newMessage: fullMessage });
+
         return fullMessage;
       } catch (error) {
         console.log(error);
         throw error;
       }
+    }
+  },
+  Subscription: {
+    newMessage: {
+      subscribe: withFilter(
+        (parent, args, ctx, info) => {
+          const { pubsub, user } = ctx;
+          if (!user) throw new AuthenticationError("Unauthenticated");
+
+          return pubsub.asyncIterator(["NEW_MESSAGE"]);
+        },
+        (parent, args, ctx, info) => {
+          const { newMessage } = parent;
+          const { user } = ctx;
+
+          if (
+            newMessage.from.id.toString() === user.id.toString() ||
+            newMessage.to.id.toString() == user.id.toString()
+          ) {
+            return true;
+          }
+
+          return false;
+        }
+      )
     }
   }
 };

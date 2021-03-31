@@ -15,6 +15,9 @@ const resolvers = {
   Mutation: {
     ...userResolvers.Mutation,
     ...messageResolvers.Mutation
+  },
+  Subscription: {
+    ...messageResolvers.Subscription
   }
 };
 

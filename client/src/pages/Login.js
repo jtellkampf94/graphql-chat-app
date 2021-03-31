@@ -31,7 +31,7 @@ const Login = ({ history }) => {
     onError: err => setErrors(err.graphQLErrors[0].extensions.errors),
     onCompleted(data) {
       dispatch({ type: "LOGIN", payload: data.login });
-      history.push("/");
+      window.location.href = "/";
     }
   });
 
