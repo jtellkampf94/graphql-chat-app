@@ -27,6 +27,7 @@ const resolvers = {
         })
           .populate("from", "_id username")
           .populate("to", "_id username")
+          .populate("reactions", "_id content userId messageId")
           .sort({ createdAt: -1 })
           .exec();
 
@@ -104,6 +105,8 @@ const resolvers = {
             content
           });
           await reaction.save();
+          message.reactions = [...message.reactions, reaction._id];
+          await message.save();
         }
 
         pubsub.publish("NEW_REACTION", { newReaction: reaction });

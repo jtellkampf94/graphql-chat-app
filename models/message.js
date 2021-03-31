@@ -7,7 +7,8 @@ const MessageSchema = new mongoose.Schema(
       required: true
     },
     from: { type: mongoose.Schema.ObjectId, ref: "user" },
-    to: { type: mongoose.Schema.ObjectId, ref: "user" }
+    to: { type: mongoose.Schema.ObjectId, ref: "user" },
+    reactions: [{ type: mongoose.Schema.ObjectId, ref: "reaction" }]
   },
   { timestamps: true }
 );

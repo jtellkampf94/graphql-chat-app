@@ -13,12 +13,12 @@ const resolvers = {
   },
   Reaction: {
     createdAt: parent => parent.createdAt.toISOString(),
-    Message: async parent =>
+    message: async parent =>
       await Message.findById(parent.messageId)
         .populate("from", "_id username")
         .populate("to", "_id username")
         .exec(),
-    User: async parent =>
+    user: async parent =>
       await User.findById(parent.userId)
         .populate("-email -hashedPassword")
         .exec()

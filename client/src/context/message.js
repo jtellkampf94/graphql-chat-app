@@ -5,7 +5,7 @@ const MessageDispatchContext = createContext();
 
 const messageReducer = (state, action) => {
   let usersCopy, userIndex;
-  const { id, messages, message } = action.payload;
+  const { id, messages, message, reaction } = action.payload;
   switch (action.type) {
     case "SET_USERS":
       return {
@@ -37,6 +37,8 @@ const messageReducer = (state, action) => {
 
       userIndex = usersCopy.findIndex(u => u.id === id);
 
+      message.reactions = [];
+
       let newUser = {
         ...usersCopy[userIndex],
         messages: usersCopy[userIndex].messages
@@ -51,6 +53,46 @@ const messageReducer = (state, action) => {
         ...state,
         users: usersCopy
       };
+    case "ADD_REACTION":
+      usersCopy = [...state.users];
+
+      userIndex = usersCopy.findIndex(u => u.id === id);
+
+      let userCopy = { ...usersCopy[userIndex] };
+
+      const messageIndex = userCopy.messages?.findIndex(
+        m => m.id === reaction.message.id
+      );
+
+      if (messageIndex > -1) {
+        let messagesCopy = [...userCopy.messages];
+
+        let reactionsCopy = [...messagesCopy[messageIndex].reactions];
+
+        const reactionIndex = reactionsCopy.findIndex(
+          r => r.id === reaction.id
+        );
+
+        if (reactionIndex > -1) {
+          reactionsCopy[reactionIndex] = reaction;
+        } else {
+          reactionsCopy = [...reactionsCopy, reaction];
+        }
+
+        messagesCopy[messageIndex] = {
+          ...messagesCopy[messageIndex],
+          reactions: reactionsCopy
+        };
+
+        userCopy = { ...userCopy, messages: messagesCopy };
+        usersCopy[userIndex] = userCopy;
+      }
+
+      return {
+        ...state,
+        users: usersCopy
+      };
+
     default:
       throw new Error(`Unknown action type: ${action.type}`);
   }

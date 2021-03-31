@@ -26,6 +26,26 @@ const NEW_MESSAGE = gql`
   }
 `;
 
+const NEW_REACTION = gql`
+  subscription newReaction {
+    newReaction {
+      id
+      content
+      message {
+        id
+        from {
+          id
+          username
+        }
+        to {
+          id
+          username
+        }
+      }
+    }
+  }
+`;
+
 const Home = () => {
   const authDispatch = useAuthDispatch();
   const messageDispatch = useMessageDispatch();
@@ -34,6 +54,10 @@ const Home = () => {
 
   const { data: messageData, error: messageError } = useSubscription(
     NEW_MESSAGE
+  );
+
+  const { data: reactionData, error: reactionError } = useSubscription(
+    NEW_REACTION
   );
 
   useEffect(() => {
@@ -53,6 +77,26 @@ const Home = () => {
       });
     }
   }, [messageError, messageData]);
+
+  useEffect(() => {
+    if (reactionError) console.log(reactionError);
+
+    if (reactionData) {
+      const reaction = reactionData.newReaction;
+      const otherUser =
+        user.id === reaction.message.to.id
+          ? reaction.message.from.id
+          : reaction.message.to.id;
+
+      messageDispatch({
+        type: "ADD_REACTION",
+        payload: {
+          id: otherUser,
+          reaction
+        }
+      });
+    }
+  }, [reactionError, reactionData]);
 
   const logout = () => {
     authDispatch({ type: "LOGOUT" });
